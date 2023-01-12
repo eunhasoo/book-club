@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.eunhasoo.bookclub.helper.Fixture.*;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 class BookInfoControllerTest {
 
     private static final String BOOK_INFO_API = "/api/bookInfo";
@@ -42,10 +44,9 @@ class BookInfoControllerTest {
 
     @Test
     @DisplayName(BOOK_INFO_API + "/search GET 요청시 ISBN이 일치하는 책 정보가 있으면 책 정보 식별자를 응답으로 생성한다.")
-    void find_exist() throws Exception {
+    void find_with_exist_isbn() throws Exception {
         // given
-        BookInfo bookInfo = bookInfo();
-        bookInfoRepository.save(bookInfo);
+        BookInfo bookInfo = bookInfoRepository.save(bookInfo());
 
         // expected
         BookInfoSearch bookInfoSearch = new BookInfoSearch(bookInfo.getIsbn());
@@ -62,9 +63,12 @@ class BookInfoControllerTest {
 
     @Test
     @DisplayName(BOOK_INFO_API + "/search GET 요청시 ISBN이 일치하는 책 정보를 찾지 못하면 isExist 값을 false로 응답을 생성한다.")
-    void find_not_exist() throws Exception {
-        BookInfoSearch bookInfoSearch = new BookInfoSearch("9788960166332");
+    void find_with_not_exist_isbn() throws Exception {
+        // given
+        String notExistISBN = "9999999999999";
+        BookInfoSearch bookInfoSearch = new BookInfoSearch(notExistISBN);
 
+        // expected
         mockMvc.perform(get(BOOK_INFO_API + "/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(bookInfoSearch)))
@@ -74,10 +78,12 @@ class BookInfoControllerTest {
     }
 
     @Test
-    @DisplayName(BOOK_INFO_API + " GET 요청시 응답으로 책 정보를 생성한다.")
-    void get_book_info_ok() throws Exception {
+    @DisplayName(BOOK_INFO_API + " GET 요청시 식별자로 조회한 책 정보를 응답으로 생성한다.")
+    void get_book_info_with_id() throws Exception {
+        // given
         BookInfo bookInfo = bookInfoRepository.save(bookInfo());
 
+        // expected
         mockMvc.perform(get(BOOK_INFO_API + "/{bookInfoId}", bookInfo.getId()))
                 .andExpect(status().isOk())
                 .andExpectAll(
@@ -95,7 +101,7 @@ class BookInfoControllerTest {
     }
 
     @Test
-    @DisplayName(BOOK_INFO_API + " GET 요청시 책 정보를 찾지 못하면 응답으로 404 코드를 생성한다.")
+    @DisplayName(BOOK_INFO_API + " GET 요청시 책 정보를 찾지 못하면 404 응답 코드와 메시지를 생성한다.")
     void get_book_info_not_found() throws Exception {
         mockMvc.perform(get(BOOK_INFO_API + "/{bookInfo}", 1000L))
                 .andExpect(status().isNotFound())
