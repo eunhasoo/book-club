@@ -3,10 +3,15 @@ package com.eunhasoo.bookclub.helper;
 import com.eunhasoo.bookclub.book.domain.BookInfo;
 import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Genre;
+import com.eunhasoo.bookclub.user.domain.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 public class Fixture {
+
+    private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public static BookInfo bookInfo() {
         return BookInfo.builder()
@@ -18,6 +23,22 @@ public class Fixture {
                 .isbn("1234567891234")
                 .publisher("Scholastic")
                 .publishedDate(LocalDate.now())
+                .build();
+    }
+
+    public static User user() {
+        return User.builder()
+                .username("tester")
+                .email("test@email.com")
+                .password("test12345")
+                .build();
+    }
+
+    public static User userWithEncodedPassword() {
+        return User.builder()
+                .username("tester")
+                .email("test@email.com")
+                .password(encoder.encode("test12345"))
                 .build();
     }
 }
