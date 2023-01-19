@@ -34,8 +34,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("isUsernameAlreadyUsed 메소드는 사용자 아이디가 이미 존재하면 true를 반환한다.")
-    void check_username() {
+    @DisplayName("isUsernameAlreadyUsed 메소드는 회원 아이디가 이미 존재하면 true를 반환한다.")
+    void check_exist_username() {
         // given
         User user = userRepository.save(Fixture.user());
 
@@ -47,8 +47,18 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("isEmailAlreadyUsed 메소드는 사용자 이메일이 이미 존재하면 true를 반환한다.")
-    void check_email() {
+    @DisplayName("isUsernameAlreadyUsed 메소드는 회원 아이디를 찾지 못하면 false를 반환한다.")
+    void check_not_exist_username() {
+        // when
+        boolean result = userService.isUsernameAlreadyUsed("not_exist");
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    @DisplayName("isEmailAlreadyUsed 메소드는 회원 이메일이 이미 존재하면 true를 반환한다.")
+    void check_exist_email() {
         // given
         User user = userRepository.save(Fixture.user());
 
@@ -57,6 +67,16 @@ class UserServiceTest {
 
         // then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("isEmailAlreadyUsed 메소드는 회원 이메일을 찾을 수 없으면 false를 반환한다.")
+    void check_not_exist_email() {
+        // when
+        boolean result = userService.isEmailAlreadyUsed("non_exist@naver.com");
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.eunhasoo.bookclub.user.domain.User;
 import com.eunhasoo.bookclub.user.domain.UserRepository;
 import com.eunhasoo.bookclub.user.ui.request.UserCreate;
 import com.eunhasoo.bookclub.user.ui.request.UserNicknameUpdate;
+import com.eunhasoo.bookclub.user.ui.request.UserPasswordChange;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +60,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName(USER_API + "/id 요청시 회원 아이디가 존재하면 \"Y\"를 응답으로 생성한다.")
-    void check_username() throws Exception {
+    void check_exist_username() throws Exception {
         // given
         User user = userRepository.save(Fixture.user());
 
@@ -72,8 +73,19 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName(USER_API + "/id 요청시 회원 아이디를 찾을 수 없으면 \"N\"를 응답으로 생성한다.")
+    void check_not_exist_username() throws Exception {
+        // expected
+        mockMvc.perform(get(USER_API + "/id")
+                        .param("id", "not_exist"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.using").value("N"))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName(USER_API + "/email 요청시 회원 이메일이 존재하면 \"Y\"를 응답으로 생성한다.")
-    void check_email() throws Exception {
+    void check_exist_email() throws Exception {
         // given
         User user = userRepository.save(Fixture.user());
 
@@ -86,13 +98,22 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName(USER_API + "/email 요청시 회원 이메일을 찾을 수 없으면 \"N\"를 응답으로 생성한다.")
+    void check_non_exist_email() throws Exception {
+        // expected
+        mockMvc.perform(get(USER_API + "/email")
+                        .param("email", "non_exist@naver.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.using").value("N"))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName(USER_API + " POST 요청시 회원을 생성하고 201 응답 코드를 생성한다.")
     @Transactional
     void sign_up() throws Exception {
-        // given
-        User user = Fixture.user();
-
         // expected
+        User user = Fixture.user();
         UserCreate userCreate = new UserCreate(user.getUsername(), user.getEmail(), user.getPassword());
 
         mockMvc.perform(post(USER_API)
@@ -103,10 +124,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName(USER_API + "/nickname 요청시 회원의 기존 닉네임을 변경한다.")
+    @DisplayName(USER_API + "/nickname 요청시 회원의 기존 닉네임을 변경하고 200 응답 코드를 생성한다.")
     void update_nickname_success() throws Exception {
         // given
-        User user = userRepository.save(Fixture.user());
+        User user = userRepository.save(Fixture.userWithEncodedPassword());
 
         when(tokenProvider.validateToken(any())).thenReturn(true);
         when(tokenProvider.createToken(anyLong())).thenReturn("token");
@@ -125,10 +146,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName(USER_API + "/nickname 요청시 회원의 기존 닉네임을 변경한다.")
+    @DisplayName(USER_API + "/password 요청시 회원의 비밀번호를 변경하고 200 응답 코드를 생성한다.")
     void change_password_success() throws Exception {
         // given
-        User user = userRepository.save(Fixture.user());
+        User user = userRepository.save(Fixture.userWithEncodedPassword());
 
         when(tokenProvider.validateToken(any())).thenReturn(true);
         when(tokenProvider.createToken(anyLong())).thenReturn("token");
@@ -136,11 +157,11 @@ class UserControllerTest {
         when(tokenProvider.getUserIdFromToken(any())).thenReturn(user.getId());
 
         // expected
-        UserNicknameUpdate userNicknameUpdate = new UserNicknameUpdate("다독이");
+        UserPasswordChange userPasswordChange = new UserPasswordChange(Fixture.user().getPassword(), "helloworld123");
 
-        mockMvc.perform(post(USER_API + "/nickname")
+        mockMvc.perform(post(USER_API + "/password")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(userNicknameUpdate))
+                        .content(om.writeValueAsString(userPasswordChange))
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(status().isOk())
                 .andDo(print());
