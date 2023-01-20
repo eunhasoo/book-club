@@ -14,6 +14,7 @@ public class UserCreate {
     @Size(max = 18, message = "아이디를 18자 이하로 입력해주세요.")
     private String username;
 
+    @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "이메일을 형식에 맞게 입력해주세요.")
     private String email;
 
