@@ -41,4 +41,12 @@ public class Fixture {
                 .password(encoder.encode("test12345"))
                 .build();
     }
+
+    public static Bookshelf bookshelf(User user) {
+        return Bookshelf.builder()
+                .isOpen(true)
+                .user(user)
+                .name("must read in 20s")
+                .build();
+    }
 }
