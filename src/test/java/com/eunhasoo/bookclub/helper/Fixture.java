@@ -1,8 +1,11 @@
 package com.eunhasoo.bookclub.helper;
 
+import com.eunhasoo.bookclub.book.domain.Book;
 import com.eunhasoo.bookclub.book.domain.BookInfo;
+import com.eunhasoo.bookclub.book.domain.Bookshelf;
 import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Genre;
+import com.eunhasoo.bookclub.book.domain.ReadProcess;
 import com.eunhasoo.bookclub.user.domain.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,4 +52,14 @@ public class Fixture {
                 .name("must read in 20s")
                 .build();
     }
+
+    public static Book book(Bookshelf bookShelf, User user, BookInfo bookInfo) {
+        return Book.builder()
+                .bookshelf(bookShelf)
+                .user(user)
+                .bookInfo(bookInfo)
+                .readProcess(ReadProcess.BEFORE_READING)
+                .build();
+    }
+
 }
