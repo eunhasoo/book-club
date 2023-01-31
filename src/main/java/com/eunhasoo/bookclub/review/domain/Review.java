@@ -61,4 +61,9 @@ public class Review extends BaseTime {
         this.content = content;
         this.score = score;
     }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
