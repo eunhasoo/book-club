@@ -6,6 +6,7 @@ import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Bookshelf;
 import com.eunhasoo.bookclub.book.domain.Genre;
 import com.eunhasoo.bookclub.book.domain.ReadProcess;
+import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.user.domain.User;
 
 import java.time.LocalDate;
@@ -47,6 +48,18 @@ public class FixtureList {
                         .user(user)
                         .bookInfo(bookInfo)
                         .readProcess(ReadProcess.BEFORE_READING)
+                        .build())
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public static List<Review> review(List<BookInfo> bookInfoList, User user) {
+        return IntStream.range(0, bookInfoList.size())
+                .mapToObj(i -> Review.builder()
+                        .title("title " + i)
+                        .content("content " + i)
+                        .reviewer(user)
+                        .bookInfo(bookInfoList.get(i))
+                        .score((int) Math.random() * 5 + 1)
                         .build())
                 .collect(Collectors.toUnmodifiableList());
     }
