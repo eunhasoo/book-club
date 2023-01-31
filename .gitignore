@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-application-auth.yml
+application-real.yml
 
 ### STS ###
 .apt_generated
