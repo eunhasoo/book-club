@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class BookInfoControllerTest {
 
-    private static final String BOOK_INFO_API = "/api/bookInfo";
+    private static final String BOOK_INFO_API = "/api/bookinfo";
 
     @Autowired
     private BookInfoRepository bookInfoRepository;
@@ -53,8 +53,7 @@ class BookInfoControllerTest {
         String json = om.writeValueAsString(bookInfoSearch);
 
         mockMvc.perform(get(BOOK_INFO_API + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .param("isbn", bookInfo.getIsbn()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isExist").value(true))
                 .andExpect(jsonPath("$.bookInfoId").value(bookInfo.getId()))
@@ -66,12 +65,10 @@ class BookInfoControllerTest {
     void find_with_not_exist_isbn() throws Exception {
         // given
         String notExistISBN = "9999999999999";
-        BookInfoSearch bookInfoSearch = new BookInfoSearch(notExistISBN);
 
         // expected
         mockMvc.perform(get(BOOK_INFO_API + "/search")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(bookInfoSearch)))
+                        .param("isbn", notExistISBN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isExist").value(false))
                 .andDo(print());

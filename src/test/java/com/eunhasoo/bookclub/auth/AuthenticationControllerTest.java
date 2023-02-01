@@ -6,6 +6,7 @@ import com.eunhasoo.bookclub.helper.Fixture;
 import com.eunhasoo.bookclub.user.domain.User;
 import com.eunhasoo.bookclub.user.domain.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ class AuthenticationControllerTest {
 
     @MockBean
     private TokenProvider tokenProvider;
+
+    @AfterEach
+    void clear() {
+        userRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("로그인 성공시 생성한 JWT 문자열을 응답과 Authorization 헤더로 생성한다.")

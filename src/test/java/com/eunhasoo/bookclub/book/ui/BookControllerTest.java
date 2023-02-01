@@ -105,12 +105,10 @@ class BookControllerTest {
         when(userDetailsService.loadUserByUserId(any())).thenReturn(CustomUserDetails.create(user));
 
         // expected
-        BookSearch bookSearch = new BookSearch(bookShelf.getId(), 1);
-
         mockMvc.perform(get(BOOK_API)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
-                        .content(om.writeValueAsString(bookSearch))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("bookshelfId", String.valueOf(bookShelf.getId()))
+                        .param("page", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.count").value(1),
@@ -148,12 +146,10 @@ class BookControllerTest {
         when(userDetailsService.loadUserByUserId(any())).thenReturn(CustomUserDetails.create(currentUser));
 
         // expected
-        BookSearch bookSearch = new BookSearch(bookshelf.getId(), 1);
-
         mockMvc.perform(get(BOOK_API)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
-                        .content(om.writeValueAsString(bookSearch))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("bookshelfId", String.valueOf(bookshelf.getId()))
+                        .param("page", "1"))
                 .andExpect(status().isForbidden())
                 .andExpectAll(
                         jsonPath("$.message").value("해당 책장은 비공개 상태이므로 접근할 수 없습니다."),
@@ -184,12 +180,10 @@ class BookControllerTest {
         when(userDetailsService.loadUserByUserId(any())).thenReturn(CustomUserDetails.create(currentUser));
 
         // expected
-        BookSearch bookSearch = new BookSearch(bookshelf.getId(), 1);
-
         mockMvc.perform(get(BOOK_API)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
-                        .content(om.writeValueAsString(bookSearch))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .param("bookshelfId", String.valueOf(bookshelf.getId()))
+                        .param("page", "1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(status().isOk())
                 .andExpectAll(
                         jsonPath("$.count").value(5),

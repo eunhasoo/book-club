@@ -2,6 +2,7 @@ package com.eunhasoo.bookclub.auth;
 
 import com.eunhasoo.bookclub.auth.ui.LoginRequest;
 import com.eunhasoo.bookclub.helper.Fixture;
+import com.eunhasoo.bookclub.user.domain.User;
 import com.eunhasoo.bookclub.user.domain.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -41,11 +42,11 @@ class AuthenticationFailureHandlerTest {
     @DisplayName("로그인 요청시 비밀번호가 틀리면 401 에러 코드와 메세지를 응답으로 반환한다.")
     void login_fail_with_wrong_password() throws Exception {
         // given
-        userRepository.save(Fixture.userWithEncodedPassword());
+        User user = userRepository.save(Fixture.userWithEncodedPassword());
 
         // expected
         String wrongPassword = "ABC123456789";
-        LoginRequest loginRequest = new LoginRequest(Fixture.user().getUsername(), wrongPassword);
+        LoginRequest loginRequest = new LoginRequest(user.getUsername(), wrongPassword);
 
         mockMvc.perform(post("/api/auth")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,10 +60,10 @@ class AuthenticationFailureHandlerTest {
     @DisplayName("로그인 요청시 아이디를 찾을 수 없으면 404 응답 코드와 오류 메세지를 생성한다.")
     void login_fail_with_wrong_username() throws Exception {
         // given
-        userRepository.save(Fixture.userWithEncodedPassword());
+        User user = userRepository.save(Fixture.userWithEncodedPassword());
 
         // expected
-        String wrongUsername = Fixture.user().getUsername() + "wrong";
+        String wrongUsername = user.getUsername() + "wrong";
         LoginRequest loginRequest = new LoginRequest(wrongUsername, Fixture.user().getPassword());
 
         mockMvc.perform(post("/api/auth")

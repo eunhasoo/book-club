@@ -27,25 +27,28 @@ public class BookInfo {
     @Column(length = 13, nullable = false, unique = true, updatable = false)
     private String isbn;
 
-    @Column(nullable = false)
+    @Column(length = 70, nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(length = 30, nullable = false)
     private String author;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookType bookType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Genre genre;
+
+    @Column(nullable = false)
+    private LocalDateTime createdDate;
 
     private String publisher;
 
     private LocalDate publishedDate;
 
     private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    private BookType bookType;
-
-    @Enumerated(EnumType.STRING)
-    private Genre genre;
-
-    private LocalDateTime createdDate;
 
     protected BookInfo() {
     }

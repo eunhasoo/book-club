@@ -65,7 +65,7 @@ public class SecurityConfig {
                             "/**/*.js")
                         .permitAll()
                     .antMatchers(
-                            "/api/bookInfo/**",
+                            "/api/bookinfo/**",
                             "/api/auth",
                             "/api/users", "/api/users/id", "/api/users/email",
                             "/api/reviews")
@@ -89,7 +89,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
+        config.addAllowedOriginPattern("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
