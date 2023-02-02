@@ -26,7 +26,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .selectFrom(review)
                 .leftJoin(review.bookInfo, bookInfo).fetchJoin()
                 .leftJoin(review.reviewer, user).fetchJoin()
-                .where(eqForm(reviewSearch.getBookType()),
+                .where(eqBookType(reviewSearch.getBookType()),
                         eqGenre(reviewSearch.getGenre()))
                 .limit(reviewSearch.getSize())
                 .offset(reviewSearch.getOffset())
@@ -34,7 +34,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .fetch();
     }
 
-    private BooleanExpression eqForm(BookType bookType) {
+    private BooleanExpression eqBookType(BookType bookType) {
         if (bookType == null) return null;
         return bookInfo.bookType.eq(bookType);
     }
