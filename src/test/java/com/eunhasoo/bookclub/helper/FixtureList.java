@@ -6,6 +6,7 @@ import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Bookshelf;
 import com.eunhasoo.bookclub.book.domain.Genre;
 import com.eunhasoo.bookclub.book.domain.ReadProcess;
+import com.eunhasoo.bookclub.review.domain.Comment;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.user.domain.User;
 
@@ -60,6 +61,16 @@ public class FixtureList {
                         .reviewer(user)
                         .bookInfo(bookInfoList.get(i))
                         .score((int) Math.random() * 5 + 1)
+                        .build())
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public static List<Comment> comment(int size, Review review, User user) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> Comment.builder()
+                        .content("comment " + i)
+                        .user(user)
+                        .review(review)
                         .build())
                 .collect(Collectors.toUnmodifiableList());
     }
