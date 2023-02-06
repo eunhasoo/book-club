@@ -65,9 +65,10 @@ public class SecurityConfig {
                             "/**/*.js")
                         .permitAll()
                     .antMatchers(
-                            "/api/bookinfo/**",
+                            "/api/users",
+                            "/api/users/id",
+                            "/api/users/email",
                             "/api/auth",
-                            "/api/users", "/api/users/id", "/api/users/email",
                             "/api/reviews")
                         .permitAll()
                     .antMatchers(
