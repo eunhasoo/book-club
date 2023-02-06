@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CommentRepositoryCustom {
 
-    List<Comment> getList(CommentSearch commentSearch);
+    List<Comment> getList(Long reviewId, CommentSearch commentSearch);
 }

@@ -3,7 +3,6 @@ package com.eunhasoo.bookclub.review.application;
 import com.eunhasoo.bookclub.book.domain.BookInfo;
 import com.eunhasoo.bookclub.book.domain.BookInfoRepository;
 import com.eunhasoo.bookclub.exception.review.CommentNotFoundException;
-import com.eunhasoo.bookclub.helper.Fixture;
 import com.eunhasoo.bookclub.helper.FixtureList;
 import com.eunhasoo.bookclub.review.domain.Comment;
 import com.eunhasoo.bookclub.review.domain.CommentRepository;
@@ -83,8 +82,8 @@ class CommentServiceTest {
         commentRepository.saveAll(FixtureList.comment(30, review, user));
 
         // when
-        CommentSearch commentSearch = new CommentSearch(review.getId(), 1);
-        List<Comment> comments = commentService.getComments(commentSearch);
+        CommentSearch commentSearch = new CommentSearch(1);
+        List<Comment> comments = commentService.getComments(review.getId(), commentSearch);
 
         comments.stream().map(CommentListResponse::new).collect(Collectors.toUnmodifiableList());
         // then

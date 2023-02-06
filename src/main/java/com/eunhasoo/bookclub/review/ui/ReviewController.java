@@ -2,11 +2,14 @@ package com.eunhasoo.bookclub.review.ui;
 
 import com.eunhasoo.bookclub.auth.CurrentUser;
 import com.eunhasoo.bookclub.common.ResultList;
+import com.eunhasoo.bookclub.review.application.CommentService;
 import com.eunhasoo.bookclub.review.application.ReviewService;
 import com.eunhasoo.bookclub.review.domain.Review;
+import com.eunhasoo.bookclub.review.ui.request.CommentSearch;
 import com.eunhasoo.bookclub.review.ui.request.ReviewCreate;
 import com.eunhasoo.bookclub.review.ui.request.ReviewSearch;
 import com.eunhasoo.bookclub.review.ui.request.ReviewUpdate;
+import com.eunhasoo.bookclub.review.ui.response.CommentListResponse;
 import com.eunhasoo.bookclub.review.ui.response.ReviewListResponse;
 import com.eunhasoo.bookclub.review.ui.response.ReviewResponse;
 import org.springframework.http.HttpStatus;
@@ -29,9 +32,11 @@ import java.util.stream.Collectors;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final CommentService commentService;
 
-    public ReviewController(ReviewService reviewService) {
+    public ReviewController(ReviewService reviewService, CommentService commentService) {
         this.reviewService = reviewService;
+        this.commentService = commentService;
     }
 
     @GetMapping("/{reviewId}")
@@ -65,5 +70,15 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@CurrentUser Long userId, @PathVariable Long reviewId) {
         reviewService.delete(userId, reviewId);
+    }
+
+    @GetMapping("/{reviewId}/comments")
+    public ResultList<?> getComments(@PathVariable Long reviewId, CommentSearch commentSearch) {
+        List<CommentListResponse> result = commentService.getComments(reviewId, commentSearch)
+                .stream()
+                .map(CommentListResponse::new)
+                .collect(Collectors.toUnmodifiableList());
+
+        return new ResultList(result.size(), result);
     }
 }

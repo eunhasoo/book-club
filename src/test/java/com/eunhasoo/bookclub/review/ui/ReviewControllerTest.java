@@ -7,8 +7,9 @@ import com.eunhasoo.bookclub.book.domain.BookInfo;
 import com.eunhasoo.bookclub.book.domain.BookInfoRepository;
 import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Genre;
-import com.eunhasoo.bookclub.helper.Fixture;
 import com.eunhasoo.bookclub.helper.FixtureList;
+import com.eunhasoo.bookclub.review.domain.Comment;
+import com.eunhasoo.bookclub.review.domain.CommentRepository;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.review.domain.ReviewRepository;
 import com.eunhasoo.bookclub.review.ui.request.ReviewCreate;
@@ -57,6 +58,9 @@ class ReviewControllerTest {
     private ReviewRepository reviewRepository;
 
     @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
     private BookInfoRepository bookInfoRepository;
 
     @Autowired
@@ -70,6 +74,7 @@ class ReviewControllerTest {
 
     @AfterEach
     void clear() {
+        commentRepository.deleteAll();
         reviewRepository.deleteAll();
         bookInfoRepository.deleteAll();
         userRepository.deleteAll();
@@ -289,6 +294,31 @@ class ReviewControllerTest {
         mockMvc.perform(delete(REVIEW_API + "/{reviewId}", review.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token"))
                 .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName(REVIEW_API + "/{reviewId}/comments GET 요청시 페이징 처리된 리뷰의 댓글 목록과 함께 200 응답 코드를 생성한다.")
+    void get_comments() throws Exception {
+        // given
+        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
+        User user = userRepository.save(userWithEncodedPassword());
+        Review review = reviewRepository.save(review(bookinfo, user));
+        List<Comment> comments = commentRepository.saveAll(FixtureList.comment(30, review, user));
+
+        when(tokenProvider.validateToken(anyString())).thenReturn(true);
+        when(tokenProvider.createToken(anyLong())).thenReturn("token");
+        when(userDetailsService.loadUserByUserId(anyLong())).thenReturn(CustomUserDetails.create(user));
+        when(tokenProvider.getUserIdFromToken(anyString())).thenReturn(user.getId());
+
+        mockMvc.perform(get(REVIEW_API + "/{reviewId}/comments", review.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .param("page", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(20))
+                .andExpect(jsonPath("$.data[0].commentId").value(comments.get(0).getId()))
+                .andExpect(jsonPath("$.data[19].commentId").value(comments.get(19).getId()))
                 .andDo(print());
     }
 }

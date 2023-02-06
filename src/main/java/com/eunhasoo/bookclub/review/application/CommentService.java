@@ -28,8 +28,8 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public List<Comment> getComments(CommentSearch commentSearch) {
-        return commentRepository.getList(commentSearch);
+    public List<Comment> getComments(Long reviewId, CommentSearch commentSearch) {
+        return commentRepository.getList(reviewId, commentSearch);
     }
 
     @Transactional

@@ -1,6 +1,7 @@
 package com.eunhasoo.bookclub.review.domain;
 
 import com.eunhasoo.bookclub.review.ui.request.CommentSearch;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import java.util.List;
@@ -17,13 +18,17 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     }
 
     @Override
-    public List<Comment> getList(CommentSearch commentSearch) {
+    public List<Comment> getList(Long reviewId, CommentSearch commentSearch) {
         return jpaQueryFactory.selectFrom(comment)
                 .leftJoin(comment.user, user).fetchJoin()
-                .where(comment.review.id.eq(commentSearch.getReviewId()))
+                .where(eqReview(reviewId))
                 .limit(commentSearch.getSize())
                 .offset(commentSearch.getOffset())
                 .orderBy(comment.id.asc())
                 .fetch();
+    }
+
+    private BooleanExpression eqReview(Long reviewId) {
+        return comment.review.id.eq(reviewId);
     }
 }

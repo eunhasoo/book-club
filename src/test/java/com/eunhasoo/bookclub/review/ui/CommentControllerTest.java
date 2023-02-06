@@ -28,8 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static com.eunhasoo.bookclub.helper.Fixture.*;
 import static com.eunhasoo.bookclub.helper.Fixture.bookInfo;
 import static com.eunhasoo.bookclub.helper.Fixture.review;
@@ -38,10 +36,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -103,32 +98,6 @@ public class CommentControllerTest {
                         .content(om.writeValueAsString(commentCreate))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-    }
-
-    @Test
-    @DisplayName(COMMENT_API + " GET 요청시 페이징 처리된 리뷰의 댓글 목록과 함께 200 응답 코드를 생성한다.")
-    void get_comments() throws Exception {
-        // given
-        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
-        User user = userRepository.save(userWithEncodedPassword());
-        Review review = reviewRepository.save(review(bookinfo, user));
-        List<Comment> comments = commentRepository.saveAll(FixtureList.comment(30, review, user));
-
-        when(tokenProvider.validateToken(anyString())).thenReturn(true);
-        when(tokenProvider.createToken(anyLong())).thenReturn("token");
-        when(userDetailsService.loadUserByUserId(anyLong())).thenReturn(CustomUserDetails.create(user));
-        when(tokenProvider.getUserIdFromToken(anyString())).thenReturn(user.getId());
-
-        mockMvc.perform(get(COMMENT_API)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
-                        .param("page", "1")
-                        .param("reviewId", String.valueOf(review.getId()))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.count").value(20))
-                .andExpect(jsonPath("$.data[0].commentId").value(comments.get(0).getId()))
-                .andExpect(jsonPath("$.data[19].commentId").value(comments.get(19).getId()))
-                .andDo(print());
     }
 
     @Test
