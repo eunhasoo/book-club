@@ -17,11 +17,11 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     }
 
     @Override
-    public List<Book> getList(BookSearch bookSearch) {
+    public List<Book> getList(Long bookshelfId, BookSearch bookSearch) {
         return jpaQueryFactory
                 .selectFrom(book)
                 .leftJoin(book.bookInfo).fetchJoin()
-                .where(eqBookshelf(bookSearch.getBookshelfId()))
+                .where(eqBookshelf(bookshelfId))
                 .limit(bookSearch.getSize())
                 .offset(bookSearch.getOffset())
                 .orderBy(book.id.desc())

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface BookRepositoryCustom {
 
-    List<Book> getList(BookSearch bookSearch);
+    List<Book> getList(Long bookshelfId, BookSearch bookSearch);
 }

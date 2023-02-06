@@ -1,9 +1,12 @@
 package com.eunhasoo.bookclub.book.ui;
 
 import com.eunhasoo.bookclub.auth.CurrentUser;
+import com.eunhasoo.bookclub.book.application.BookService;
 import com.eunhasoo.bookclub.book.application.BookshelfService;
+import com.eunhasoo.bookclub.book.ui.request.BookSearch;
 import com.eunhasoo.bookclub.book.ui.request.BookshelfCreate;
 import com.eunhasoo.bookclub.book.ui.request.BookshelfUpdate;
+import com.eunhasoo.bookclub.book.ui.response.BookListResponse;
 import com.eunhasoo.bookclub.book.ui.response.BookshelfResponse;
 import com.eunhasoo.bookclub.common.ResultList;
 import org.springframework.http.HttpStatus;
@@ -25,9 +28,11 @@ import java.util.stream.Collectors;
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
+    private final BookService bookService;
 
-    public BookshelfController(BookshelfService bookshelfService) {
+    public BookshelfController(BookshelfService bookshelfService, BookService bookService) {
         this.bookshelfService = bookshelfService;
+        this.bookService = bookService;
     }
 
     @GetMapping
@@ -57,5 +62,17 @@ public class BookshelfController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@CurrentUser Long userId, @PathVariable Long bookshelfId) {
         bookshelfService.delete(bookshelfId, userId);
+    }
+
+    @GetMapping("/{bookshelfId}/books")
+    public ResultList<?> getAll(@CurrentUser Long userId,
+                                @PathVariable Long bookshelfId,
+                                BookSearch bookSearch) {
+        List<BookListResponse> books = bookService.getAll(userId, bookshelfId, bookSearch)
+                .stream()
+                .map(BookListResponse::new)
+                .collect(Collectors.toUnmodifiableList());
+
+        return new ResultList(books.size(), books);
     }
 }

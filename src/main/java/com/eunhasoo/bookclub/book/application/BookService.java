@@ -81,11 +81,11 @@ public class BookService {
         book.updateReadProcess(bookUpdate.getReadProcess());
     }
 
-    public List<Book> getAll(Long userId, BookSearch bookSearch) {
-        Bookshelf bookshelf = bookShelfRepository.getById(bookSearch.getBookshelfId());
+    public List<Book> getAll(Long userId, Long bookshelfId, BookSearch bookSearch) {
+        Bookshelf bookshelf = bookShelfRepository.getById(bookshelfId);
 
         bookshelf.checkAccessibility(userId);
 
-        return bookRepository.getList(bookSearch);
+        return bookRepository.getList(bookshelfId, bookSearch);
     }
 }

@@ -70,8 +70,8 @@ class BookServiceTest {
         bookRepository.saveAll(FixtureList.book(bookshelf, user, bookInfoList));
 
         // when
-        BookSearch bookSearch = new BookSearch(bookshelf.getId(), 1);
-        List<Book> result = bookService.getAll(user.getId(), bookSearch);
+        BookSearch bookSearch = new BookSearch(1);
+        List<Book> result = bookService.getAll(user.getId(), bookshelf.getId(), bookSearch);
 
         // then
         assertThat(result).hasSize(15);
@@ -100,8 +100,8 @@ class BookServiceTest {
 
 
         // expected
-        BookSearch bookSearch = new BookSearch(bookshelf.getId(), 1);
-        assertThatThrownBy(() -> bookService.getAll(anotherUser.getId(), bookSearch))
+        BookSearch bookSearch = new BookSearch(1);
+        assertThatThrownBy(() -> bookService.getAll(anotherUser.getId(), bookshelf.getId(), bookSearch))
                 .isInstanceOf(BookshelfAccessFailureException.class);
     }
 

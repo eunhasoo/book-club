@@ -8,16 +8,12 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class BookSearch {
 
-    @NotNull
-    private Long bookshelfId;
-
     @Builder.Default
     private int page = 1;
 
     private final int size = 15;
 
-    public BookSearch(Long bookshelfId, int page) {
-        this.bookshelfId = bookshelfId;
+    public BookSearch(int page) {
         this.page = page;
     }
 
