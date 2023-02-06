@@ -6,12 +6,16 @@ import com.eunhasoo.bookclub.book.domain.Bookshelf;
 import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Genre;
 import com.eunhasoo.bookclub.book.domain.ReadProcess;
+import com.eunhasoo.bookclub.review.domain.Comment;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.user.domain.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Fixture {
 
@@ -70,6 +74,14 @@ public class Fixture {
                 .reviewer(reviewer)
                 .bookInfo(bookInfo)
                 .score((int) Math.random() * 5 + 1)
+                .build();
+    }
+
+    public static Comment comment(Review review, User user) {
+        return Comment.builder()
+                .content("comment")
+                .user(user)
+                .review(review)
                 .build();
     }
 }

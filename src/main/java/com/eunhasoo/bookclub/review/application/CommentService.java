@@ -5,6 +5,7 @@ import com.eunhasoo.bookclub.review.domain.CommentRepository;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.review.domain.ReviewRepository;
 import com.eunhasoo.bookclub.review.ui.request.CommentCreate;
+import com.eunhasoo.bookclub.review.ui.request.CommentEdit;
 import com.eunhasoo.bookclub.review.ui.request.CommentSearch;
 import com.eunhasoo.bookclub.user.domain.User;
 import com.eunhasoo.bookclub.user.domain.UserRepository;
@@ -43,5 +44,18 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void edit(Long id, Long userId, CommentEdit commentEdit) {
+        Comment comment = commentRepository.getByIdAndUserId(id, userId);
+
+        comment.edit(commentEdit.getContent());
+    }
+
+    @Transactional
+    public void delete(Long id, Long userId) {
+        Comment comment = commentRepository.getByIdAndUserId(id, userId);
+        commentRepository.delete(comment);
     }
 }

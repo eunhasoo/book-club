@@ -1,9 +1,11 @@
 package com.eunhasoo.bookclub.review.ui.response;
 
 import com.eunhasoo.bookclub.review.domain.Comment;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class CommentListResponse {
     private Long commentId;
     private String content;

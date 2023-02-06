@@ -5,6 +5,7 @@ import com.eunhasoo.bookclub.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ public class Comment extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 3000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,5 +41,9 @@ public class Comment extends BaseTime {
         this.content = content;
         this.review = review;
         this.user = user;
+    }
+
+    public void edit(String content) {
+        this.content = content;
     }
 }

@@ -2,6 +2,7 @@ package com.eunhasoo.bookclub.review.application;
 
 import com.eunhasoo.bookclub.book.domain.BookInfo;
 import com.eunhasoo.bookclub.book.domain.BookInfoRepository;
+import com.eunhasoo.bookclub.exception.review.CommentNotFoundException;
 import com.eunhasoo.bookclub.helper.Fixture;
 import com.eunhasoo.bookclub.helper.FixtureList;
 import com.eunhasoo.bookclub.review.domain.Comment;
@@ -9,6 +10,7 @@ import com.eunhasoo.bookclub.review.domain.CommentRepository;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.review.domain.ReviewRepository;
 import com.eunhasoo.bookclub.review.ui.request.CommentCreate;
+import com.eunhasoo.bookclub.review.ui.request.CommentEdit;
 import com.eunhasoo.bookclub.review.ui.request.CommentSearch;
 import com.eunhasoo.bookclub.review.ui.response.CommentListResponse;
 import com.eunhasoo.bookclub.user.domain.User;
@@ -88,5 +90,82 @@ class CommentServiceTest {
         // then
         assertThat(comments.size()).isEqualTo(commentSearch.getSize());
         assertThat(comments.get(0).getId()).isLessThan(comments.get(comments.size() - 1).getId());
+    }
+
+    @Test
+    @DisplayName("edit 메소드는 작성한 댓글의 내용을 수정한다.")
+    void edit_comment() {
+        // given
+        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
+        User user = userRepository.save(userWithEncodedPassword());
+        Review review = reviewRepository.save(review(bookinfo, user));
+        Comment comment = commentRepository.save(comment(review, user));
+
+        // when
+        CommentEdit commentEdit = new CommentEdit("수정된 댓글");
+        commentService.edit(comment.getId(), user.getId(), commentEdit);
+
+        // then
+        Comment afterEdit = commentRepository.getByIdAndUserId(comment.getId(), user.getId());
+        assertThat(afterEdit.getContent()).isEqualTo("수정된 댓글");
+        assertThat(comment.getUpdatedDate()).isNotEqualTo(afterEdit.getUpdatedDate());
+    }
+
+    @Test
+    @DisplayName("edit 메소드는 다른 사용자의 댓글을 수정하려고 하면 에러를 던진다.")
+    void edit_comment_fail() {
+        // given
+        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
+        User user = userRepository.save(userWithEncodedPassword());
+        Review review = reviewRepository.save(review(bookinfo, user));
+        Comment comment = commentRepository.save(comment(review, user));
+
+        User anotherUser = userRepository.save(User.builder()
+                .email("hello@gmail.com")
+                .password("hello")
+                .username("hello123")
+                .build());
+
+        // expected
+        CommentEdit commentEdit = new CommentEdit("수정된 댓글");
+        assertThatThrownBy(() -> commentService.edit(comment.getId(), anotherUser.getId(), commentEdit))
+                .isInstanceOf(CommentNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("delete 메소드는 작성한 댓글을 삭제한다.")
+    void delete_comment() {
+        // given
+        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
+        User user = userRepository.save(userWithEncodedPassword());
+        Review review = reviewRepository.save(review(bookinfo, user));
+        Comment comment = commentRepository.save(comment(review, user));
+
+        // when
+        commentService.delete(comment.getId(), user.getId());
+
+        // then
+        assertThatThrownBy(() -> commentRepository.getByIdAndUserId(comment.getId(), user.getId()))
+                .isInstanceOf(CommentNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("delete 메소드는 다른 사용자의 댓글을 삭제하려고 하면 에러를 던진다.")
+    void delete_comment_with_wrong_writer() {
+        // given
+        BookInfo bookinfo = bookInfoRepository.save(bookInfo());
+        User user = userRepository.save(userWithEncodedPassword());
+        Review review = reviewRepository.save(review(bookinfo, user));
+        Comment comment = commentRepository.save(comment(review, user));
+
+        User anotherUser = userRepository.save(User.builder()
+                .email("hello@gmail.com")
+                .password("hello")
+                .username("hello123")
+                .build());
+
+        // expected
+        assertThatThrownBy(() -> commentService.delete(comment.getId(), anotherUser.getId()))
+                .isInstanceOf(CommentNotFoundException.class);
     }
 }
