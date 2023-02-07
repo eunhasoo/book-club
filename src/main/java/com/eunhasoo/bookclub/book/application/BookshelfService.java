@@ -66,9 +66,7 @@ public class BookshelfService {
     public void delete(Long bookshelfId, Long userId) {
         Bookshelf bookshelf = bookshelfRepository.getByIdAndUserId(bookshelfId, userId);
 
-        List<Book> books = bookRepository.findAllByBookshelfId(bookshelfId);
-        bookRepository.deleteAll(books);
-
+        bookRepository.deleteAllByBookshelfId(bookshelfId);
         bookshelfRepository.delete(bookshelf);
     }
 }

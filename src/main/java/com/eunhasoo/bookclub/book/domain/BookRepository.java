@@ -2,6 +2,7 @@ package com.eunhasoo.bookclub.book.domain;
 
 import com.eunhasoo.bookclub.exception.book.BookNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -14,8 +15,9 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookRepositor
 
     boolean existsByBookInfoIdAndBookshelfId(Long bookInfoId, Long bookshelfId);
 
-    @Query("select b from Book b where b.bookshelf.id = :bookshelfId")
-    List<Book> findAllByBookshelfId(Long bookshelfId);
+    @Modifying
+    @Query("delete from Book b where b.bookshelf.id = :bookshelfId")
+    void deleteAllByBookshelfId(Long bookshelfId);
 
     default Book getByIdAndUserId(Long bookId, Long userId) {
         return findByIdAndUserId(bookId, userId)
