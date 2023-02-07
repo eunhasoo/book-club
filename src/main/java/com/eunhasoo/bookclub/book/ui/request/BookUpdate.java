@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class BookUpdate {
 
-    @NotNull
+    @NotNull(message = "현재 읽기 상태를 선택해주세요.")
     private ReadProcess readProcess;
 
     private BookUpdate() {

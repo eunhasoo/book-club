@@ -4,10 +4,8 @@ import com.eunhasoo.bookclub.common.BaseTime;
 import com.eunhasoo.bookclub.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,18 +25,19 @@ public class Book extends BaseTime {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ReadProcess readProcess;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_info_id")
+    @JoinColumn(name = "book_info_id", nullable = false)
     private BookInfo bookInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bookshelf_id")
+    @JoinColumn(name = "bookshelf_id", nullable = false)
     private Bookshelf bookshelf;
 
     protected Book() {

@@ -44,10 +44,12 @@ public class BookInfo {
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
+    @Column(length = 20)
     private String publisher;
 
     private LocalDate publishedDate;
 
+    @Column(length = 1000)
     private String imageUrl;
 
     protected BookInfo() {

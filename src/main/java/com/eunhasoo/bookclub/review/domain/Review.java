@@ -30,7 +30,7 @@ public class Review extends BaseTime {
     @OneToOne(fetch = FetchType.LAZY)
     private BookInfo bookInfo;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50, nullable = false)
     private String title;
 
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class Review extends BaseTime {
     private int score;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewer_id")
+    @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 
     protected Review() {

@@ -23,13 +23,14 @@ public class Bookshelf extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private boolean isOpen;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     protected Bookshelf() {
@@ -48,7 +49,7 @@ public class Bookshelf extends BaseTime {
     }
 
     public void checkAccessibility(Long userId) {
-        boolean isOwner = this.user.getId().equals(userId);
+        boolean isOwner = user.getId().equals(userId);
         if (!isOwner && !isOpen) {
             throw new BookshelfAccessFailureException();
         }

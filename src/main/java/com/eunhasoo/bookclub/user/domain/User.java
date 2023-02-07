@@ -24,19 +24,20 @@ public class User extends BaseTime {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(length = 18, nullable = false, unique = true, updatable = false)
     private String username;
 
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(length = 30, nullable = false, unique = true, updatable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 60, nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 18, nullable = false, unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     protected User() {
