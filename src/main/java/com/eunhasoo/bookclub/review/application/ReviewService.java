@@ -3,6 +3,7 @@ package com.eunhasoo.bookclub.review.application;
 import com.eunhasoo.bookclub.book.domain.BookInfo;
 import com.eunhasoo.bookclub.book.domain.BookInfoRepository;
 import com.eunhasoo.bookclub.exception.review.ReviewAlreadyExistException;
+import com.eunhasoo.bookclub.review.domain.CommentRepository;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.review.domain.ReviewRepository;
 import com.eunhasoo.bookclub.review.ui.request.ReviewCreate;
@@ -22,13 +23,16 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BookInfoRepository bookInfoRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     public ReviewService(ReviewRepository reviewRepository,
                          BookInfoRepository bookInfoRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         CommentRepository commentRepository) {
         this.reviewRepository = reviewRepository;
         this.bookInfoRepository = bookInfoRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
@@ -74,6 +78,8 @@ public class ReviewService {
     @Transactional
     public void delete(Long userId, Long reviewId) {
         Review review = reviewRepository.getByIdAndReviewerId(reviewId, userId);
+
+        commentRepository.deleteAllByReviewId(reviewId);
         reviewRepository.delete(review);
     }
 }

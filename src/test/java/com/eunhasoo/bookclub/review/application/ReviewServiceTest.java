@@ -6,9 +6,12 @@ import com.eunhasoo.bookclub.book.domain.BookRepository;
 import com.eunhasoo.bookclub.book.domain.BookType;
 import com.eunhasoo.bookclub.book.domain.Genre;
 import com.eunhasoo.bookclub.exception.auth.DataAccessFailureException;
+import com.eunhasoo.bookclub.exception.review.CommentNotFoundException;
 import com.eunhasoo.bookclub.exception.review.ReviewAlreadyExistException;
 import com.eunhasoo.bookclub.exception.review.ReviewNotFoundException;
 import com.eunhasoo.bookclub.helper.FixtureList;
+import com.eunhasoo.bookclub.review.domain.Comment;
+import com.eunhasoo.bookclub.review.domain.CommentRepository;
 import com.eunhasoo.bookclub.review.domain.Review;
 import com.eunhasoo.bookclub.review.domain.ReviewRepository;
 import com.eunhasoo.bookclub.review.ui.request.ReviewCreate;
@@ -50,8 +53,12 @@ class ReviewServiceTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     @AfterEach
     void clear() {
+        commentRepository.deleteAll();
         reviewRepository.deleteAll();
         bookRepository.deleteAll();
         bookInfoRepository.deleteAll();
@@ -114,7 +121,7 @@ class ReviewServiceTest {
 
     @Test
     @DisplayName("getReviews 메소드는 유형, 장르에 따라 리뷰를 조회하여 반환한다.")
-    void get_by_keyword() {
+    void get_by_filter() {
         // given
         User user = userRepository.save(userWithEncodedPassword());
 
@@ -202,5 +209,39 @@ class ReviewServiceTest {
         ReviewUpdate reviewUpdate = new ReviewUpdate("수정된 제목", "수정된 내용");
         assertThatThrownBy(() -> reviewService.update(anotherUser.getId(), review.getId(), reviewUpdate))
                 .isInstanceOf(DataAccessFailureException.class);
+    }
+
+    @Test
+    @DisplayName("delete 메소드는 작성한 리뷰를 삭제한다.")
+    void delete_review() {
+        // given
+        User user = userRepository.save(userWithEncodedPassword());
+        BookInfo bookInfo = bookInfoRepository.save(bookInfo());
+        Review review = reviewRepository.save(review(bookInfo, user));
+
+        // when
+        reviewService.delete(user.getId(), review.getId());
+
+        // then
+        assertThatThrownBy(() -> reviewRepository.getById(review.getId()))
+                .isInstanceOf(ReviewNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("delete 메소드는 리뷰를 삭제하면서 리뷰에 포함된 댓글도 함께 지운다.")
+    void delete_review_with_comments() {
+        // given
+        User user = userRepository.save(userWithEncodedPassword());
+        BookInfo bookInfo = bookInfoRepository.save(bookInfo());
+        Review review = reviewRepository.save(review(bookInfo, user));
+        List<Comment> comments = commentRepository.saveAll(FixtureList.comment(30, review, user));
+
+        // when
+        reviewService.delete(user.getId(), review.getId());
+
+        // then
+        assertThatThrownBy(() ->
+                comments.forEach(comment -> commentRepository.getByIdAndUserId(comment.getId(), user.getId()))
+        ).isInstanceOf(CommentNotFoundException.class);
     }
 }
